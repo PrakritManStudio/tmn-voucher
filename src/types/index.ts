@@ -51,11 +51,11 @@ export type Data = {
   redeemer_profile: RedeemerProfile;
   my_ticket: MyTicket;
   tickets: MyTicket[];
-} | null;
+};
 
 export type RedeemVoucherResponse = {
   status: Status;
-  data: Data;
+  data: Data | null;
 };
 
 export type ReturnData =
@@ -69,7 +69,7 @@ export type ReturnData =
       success: false;
       code: StatusCode;
       message: string;
-      data?: Data;
+      data?: Data | null;
     }
   | {
       success: false;

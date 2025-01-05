@@ -112,7 +112,7 @@ export default async function redeemvouchers(
       success: true,
       code: redeemResponse.status.code,
       message: redeemResponse.status.message,
-      data: redeemResponse.data,
+      data: redeemResponse.data!,
     };
   }
   return {
