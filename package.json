@@ -1,0 +1,44 @@
+{
+  "name": "@prakrit_m/tmn-voucher",
+  "version": "1.0.0",
+  "private": false,
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "test": "ts-node example/test.ts",
+    "build": "tsup",
+    "build:run": "tsup && node dist/index.js",
+    "publish": "npm run build"
+  },
+  "author": "Prakrit M. <prakritmanstudio@gmail.com>",
+  "keywords": [
+    "truemoney",
+    "truewallet",
+    "tmn",
+    "tmn-voucher",
+    "tw-voucher",
+    "typescript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PrakritManStudio/tmn-voucher.git"
+  },
+  "bugs": {
+    "url": "https://github.com/PrakritManStudio/tmn-voucher/issues"
+  },
+  "homepage": "https://github.com/PrakritManStudio/tmn-voucher#readme",
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "zod": "^3.24.1"
+  }
+}
