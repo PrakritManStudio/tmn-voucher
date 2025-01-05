@@ -46,9 +46,7 @@ function redeemWithPromise() {
   redeemvouchers(phoneNumber, voucherUrl, options)
     .then((response) => {
       if (response.success) {
-        console.log(
-          `🎉 แลกคูปองสำเร็จ: ${response.data.voucher.amount_baht} บาท`
-        );
+        console.log(`🎉 แลกคูปองสำเร็จ: ${response.amount} สตางค์`);
       } else {
         handleVoucherError(response);
       }
@@ -63,9 +61,7 @@ async function redeemWithAsync() {
   try {
     const response = await redeemvouchers(phoneNumber, voucherUrl, options);
     if (response.success) {
-      console.log(
-        `🎉 แลกคูปองสำเร็จ: ${response.data.voucher.amount_baht} บาท`
-      );
+      console.log(`🎉 แลกคูปองสำเร็จ: ${response.amount} สตางค์`);
     } else {
       handleVoucherError(response);
     }
@@ -85,6 +81,12 @@ function handleVoucherError(response: { code: string; message: string }) {
       break;
     case "VOUCHER_OUT_OF_STOCK":
       console.warn("❌ คูปองถูกใช้ไปแล้ว");
+      break;
+    case "CANNOT_GET_OWN_VOUCHER":
+      console.warn("🚫 ไม่สามารถใช้คูปองตัวเองได้");
+      break;
+    case "CONDITION_NOT_MET":
+      console.warn("🚫 ไม่ตรงเงื่อนไข");
       break;
     default:
       console.warn(`⚠️ การแลกคูปองล้มเหลว: ${response.message}`);
@@ -113,25 +115,85 @@ redeemWithAsync();
 
 คืนค่าเป็น Promise ที่ resolve เป็นวัตถุ `ReturnData`
 
+### `Data`
+
+```typescript
+interface Data {
+  voucher: Voucher;
+  owner_profile: Profile;
+  redeemer_profile: RedeemerProfile;
+  my_ticket: MyTicket;
+  tickets: MyTicket[];
+}
+
+interface Voucher {
+  voucher_id: string;
+  amount_baht: string;
+  redeemed_amount_baht: string;
+  member: number;
+  status: "active" | "redeemed" | "expired";
+  link: string;
+  detail: string;
+  expire_date: number;
+  type: "R" | "F";
+  redeemed: number;
+  available: number;
+}
+
+interface Profile {
+  full_name: string;
+}
+
+interface RedeemerProfile {
+  mobile_number: string;
+}
+
+interface MyTicket {
+  mobile: string;
+  update_date: number;
+  amount_baht: string;
+  full_name: string;
+  profile_pic: string | null;
+}
+```
+
+`Data` ประกอบด้วยข้อมูลดังนี้:
+
+- `voucher`: ข้อมูลคูปอง
+- `owner_profile`: โปรไฟล์ของเจ้าของคูปอง
+- `redeemer_profile`: โปรไฟล์ของผู่ที่จะแลกคูปอง
+- `my_ticket`: ข้อมูลบัญชีของผู้รับเงินแล้ว
+- `tickets`: รายการข้อมูลบัญชีของผู้รับเงินแล้ว
+
 ## 🛠️ Types
 
 ### `Options`
 
 ```typescript
-interface Options {
-  amount: number; // จำนวนเงินในหน่วยสตางค์
+type Options {
+  amount: number; // จำนวนเงินในหน่วยสตางค์ 100-20000000
 }
 ```
 
 ### `ReturnData`
 
 ```typescript
-interface ReturnData {
-  success: boolean;
-  code: string;
-  message: string;
-  data?: Data;
-}
+type ReturnData =
+  | {
+      // กรณี redeem สำเร็จ
+      success: true;
+      code: "SUCCESS";
+      message: string;
+      amount: number; // จำนวนเงินเป็นสตางค์
+      data: Data; // ข้อมูลจาก TrueMoney
+    }
+  | {
+      // กรณี redeem ไม่สำเร็จ
+      success: false;
+      code: string;
+      message: string;
+      data?: Data | null;
+    };
 ```
 
 ## 📋 Response Codes
@@ -144,11 +206,12 @@ interface ReturnData {
 | `VOUCHER_OUT_OF_STOCK`   | คูปองถูกใช้ไปแล้ว             | false   |
 | `VOUCHER_EXPIRED`        | คูปองหมดอายุ                  | false   |
 | `CANNOT_GET_OWN_VOUCHER` | ไม่สามารถแลกคูปองของตัวเองได้ | false   |
-| `TARGET_USER_NOT_FOUND`  | ไม่พบผู้ใช้เป้าหมาย           | false   |
-| `TARGET_USER_REDEEMED`   | ผู้ใช้เป้าหมายได้แลกคูปองแล้ว | false   |
+| `TARGET_USER_NOT_FOUND`  | ไม่พบหมายเลขโทรศัพท์          | false   |
+| `TARGET_USER_REDEEMED`   | ผู้ใช้นี้เคยแลกคูปองแล้ว      | false   |
 | `CONDITION_NOT_MET`      | ไม่ตรงเงื่อนไข (options)      | false   |
 | `INVALID_INPUT`          | ข้อมูลไม่ถูกต้อง              | false   |
 | `MAINTENANCE`            | อยู่ในช่วงการบำรุงรักษา       | false   |
+| `INTERNAL_ERROR`         | Internal server error         | false   |
 
 ## 📄 License
 

@@ -1,1 +1,1 @@
-export const BASE_URL = "https://gift.truemoney.com";
+export const BASE_URL = "https://gift.truemoney.com" as const;

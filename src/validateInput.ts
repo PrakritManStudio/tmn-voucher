@@ -1,6 +1,6 @@
 import z from "zod";
 import { BASE_URL } from "./constants";
-import type { ValidateInputResponse } from "./types";
+import type { ValidateInputResponse, Options } from "./types";
 
 const inputSchema = z.object({
   phoneNumber: z
@@ -20,9 +20,19 @@ const inputSchema = z.object({
     ),
 });
 
+const optionsSchema = z.object({
+  amount: z
+    .number()
+    .int("amount: ต้องเป็นจำนวนเต็ม")
+    .positive()
+    .min(100, "amount: จำนวนเงินขั้นต่ำ 1 บาท")
+    .max(20000000, "amount: จำนวนเงินต้องไม่เกิน 200,000 บาท"),
+});
+
 export async function validateInput(
   phoneNumber: string,
-  voucherUrl: string
+  voucherUrl: string,
+  options?: Options
 ): Promise<ValidateInputResponse> {
   const validationResult = inputSchema.safeParse({ phoneNumber, voucherUrl });
   if (!validationResult.success) {
@@ -32,6 +42,21 @@ export async function validateInput(
       message: validationResult.error.errors[0].message,
     };
   }
+
+  if (options) {
+    const optionsValidationResult = optionsSchema.safeParse(options);
+    if (!optionsValidationResult.success) {
+      optionsValidationResult.error.errors.map((error) => {
+        console.log(error.message);
+      });
+      return {
+        success: false,
+        code: "INVALID_INPUT",
+        message: optionsValidationResult.error.errors[0].message,
+      };
+    }
+  }
+
   return {
     success: true,
     code: "SUCCESS",

@@ -1,4 +1,4 @@
-type StatusCode =
+export type StatusCode =
   | "BAD_PARAM" // Bad Parameters
   | "SUCCESS" // success
   | "VOUCHER_NOT_FOUND" // Voucher doesn't exist.
@@ -6,7 +6,8 @@ type StatusCode =
   | "VOUCHER_EXPIRED" // Voucher is expired.
   | "CANNOT_GET_OWN_VOUCHER" // Cannot redeem your voucher by yourself.
   | "TARGET_USER_NOT_FOUND" // Target user doesn't exist.
-  | "TARGET_USER_REDEEMED"; // Target user already redeemed the voucher.
+  | "TARGET_USER_REDEEMED" // Target user already redeemed the voucher.
+  | "INTERNAL_ERROR" // Internal server error
 
 type Status = {
   message: string;
@@ -15,7 +16,7 @@ type Status = {
 
 type VoucherStatus = "active" | "redeemed" | "expired";
 
-type Voucher = {
+export type Voucher = {
   voucher_id: string;
   amount_baht: string;
   redeemed_amount_baht: string;
@@ -35,7 +36,7 @@ type Profile = {
 
 type RedeemerProfile = {
   mobile_number: string;
-} | null;
+};
 
 type MyTicket = {
   mobile: string;
@@ -43,7 +44,7 @@ type MyTicket = {
   amount_baht: string;
   full_name: string;
   profile_pic: string | null;
-} | null;
+};
 
 export type Data = {
   voucher: Voucher;
@@ -53,23 +54,45 @@ export type Data = {
   tickets: MyTicket[];
 };
 
-export type RedeemVoucherResponse = {
-  status: Status;
-  data: Data | null;
-};
+// export type RedeemVoucherResponse = {
+//   status: Status;
+//   data: Data | null;
+// };
+
+export type RedeemVoucherResponse =
+  | {
+      status: {
+        code: "SUCCESS";
+        message: string;
+      };
+      data: Data;
+    }
+  | {
+      status: {
+        code: Exclude<StatusCode, "SUCCESS">;
+        message: string;
+      };
+      data: Data | null;
+    };
 
 export type ReturnData =
   | {
       success: true;
-      code: StatusCode;
+      code: "SUCCESS";
       message: string;
+      amount: number;
       data: Data;
     }
   | {
       success: false;
-      code: StatusCode;
+      code: Exclude<StatusCode, "SUCCESS">;
       message: string;
-      data?: Data | null;
+      data?:
+        | (Data & {
+            my_ticket: MyTicket | null;
+            redeemer_profile: RedeemerProfile | null;
+          })
+        | null;
     }
   | {
       success: false;
