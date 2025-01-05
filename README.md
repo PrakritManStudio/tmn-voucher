@@ -1,61 +1,106 @@
-# @prakrit_m/tmn-voucher
+# @prakrit_m/tmn-voucher 🎟️
 
 ไลบรารี TypeScript สำหรับการแลกคูปองอั่งเปา TrueMoney Wallet
 
-## Installation
+![NPM Last Update](https://img.shields.io/npm/last-update/%40prakrit_m%2Ftmn-voucher)
+[![NPM version](https://img.shields.io/npm/v/@prakrit_m/tmn-voucher.svg?style=flat)](https://www.npmjs.org/package/@prakrit_m/tmn-voucher)
 
-ติดตั้งแพ็กเกจโดยใช้ npm:
+## 🌟 Features
+
+- ใช้งานง่ายและครอบคลุมฟีเจอร์ที่จำเป็น
+- รองรับ TypeScript
+- สามารถแลกคูปองได้เมื่อตรงตามเงื่อนไขที่กำหนด
+- มีการตรวจสอบและ validate ข้อมูลก่อนการแลกคูปอง
+- จัดการและแยกประเภท Error Code ได่ง่าย
+
+## 🚀 Installation
+
+ติดตั้งแพ็กเกจ:
 
 ```bash
+# npm
 npm install @prakrit_m/tmn-voucher
+
+# yarn
+yarn add @prakrit_m/tmn-voucher
 ```
 
-## Usage
+## 📖 Usage
 
 นำเข้าฟังก์ชัน `redeemvouchers` และใช้มันเพื่อแลกคูปองซองอั่งเปา TrueMoney Wallet
 
 ```typescript
 import redeemvouchers from "@prakrit_m/tmn-voucher";
 
+// ตัวอย่างข้อมูลสำหรับแลกคูปอง
 const phoneNumber = "0812345678";
 const voucherUrl = "https://gift.truemoney.com/campaign/?v=YOUR_VOUCHER_CODE";
+
+// ตัวเลือกเพิ่มเติมจะระบุหรือไม่ก็ได้ เช่น จำนวนเงิน
 const options = {
-  amount: 10000, // จำนวนเงินในหน่วยสตางค์
+  amount: 10000, // จำนวนเงินในหน่วยสตางค์ (100 บาท) กรณีที่ยอดเงินไม่ตรงจะไม่ทำการ redeem
 };
 
-// Using Promises
-redeemvouchers(phoneNumber, voucherUrl, options)
-  .then((response) => {
-    if (response.success) {
-      console.log("แลกคูปองสำเร็จ:", response.data);
-    } else {
-      console.log("การแลกคูปองล้มเหลว:", response.message);
-    }
-  })
-  .catch((error) => {
-    console.error("เกิดข้อผิดพลาดในการแลกคูปอง:", error);
-  });
+// ใช้ Promises
+function redeemWithPromise() {
+  redeemvouchers(phoneNumber, voucherUrl, options)
+    .then((response) => {
+      if (response.success) {
+        console.log(
+          `🎉 แลกคูปองสำเร็จ: ${response.data.voucher.amount_baht} บาท`
+        );
+      } else {
+        handleVoucherError(response);
+      }
+    })
+    .catch((error) => {
+      console.error("❌ เกิดข้อผิดพลาดในการแลกคูปอง:", error);
+    });
+}
 
-// Using Async/Await
-async function redeemVoucherAsync() {
+// ใช้ Async/Await
+async function redeemWithAsync() {
   try {
     const response = await redeemvouchers(phoneNumber, voucherUrl, options);
     if (response.success) {
-      console.log("แลกคูปองสำเร็จ:", response.data);
+      console.log(
+        `🎉 แลกคูปองสำเร็จ: ${response.data.voucher.amount_baht} บาท`
+      );
     } else {
-      console.log("การแลกคูปองล้มเหลว:", response.message);
+      handleVoucherError(response);
     }
   } catch (error) {
-    console.error("เกิดข้อผิดพลาดในการแลกคูปอง:", error);
+    console.error("❌ เกิดข้อผิดพลาดในการแลกคูปอง:", error);
   }
 }
 
-redeemVoucherAsync();
+// ฟังก์ชันจัดการ Error จากการแลกคูปอง
+function handleVoucherError(response: { code: string; message: string }) {
+  switch (response.code) {
+    case "VOUCHER_NOT_FOUND":
+      console.warn("🔍 ไม่พบคูปอง");
+      break;
+    case "VOUCHER_EXPIRED":
+      console.warn("⏳ คูปองหมดอายุ");
+      break;
+    case "VOUCHER_OUT_OF_STOCK":
+      console.warn("❌ คูปองถูกใช้ไปแล้ว");
+      break;
+    default:
+      console.warn(`⚠️ การแลกคูปองล้มเหลว: ${response.message}`);
+  }
+}
+
+// เรียกใช้ฟังก์ชันตัวอย่าง
+redeemWithPromise();
+redeemWithAsync();
 ```
 
-กรณีที่ไม่ได้ระบุพารามิเตอร์ options จะเป็นการ redeem โดยไม่เช็คเงื่อนไขใดๆ
+กรณีที่ไม่ได้ระบุพารามิเตอร์ options จะเป็นการ redeem โดยไม่เช็คเงื่อนไขใดๆก่อน
 
-## API
+กรณีที่มีการระบุ options ถ้าไม่ตรงกับเงื่อนไขใดๆจะไม่ทำการ redeem
+
+## 📚 API
 
 ### `redeemvouchers(phoneNumber: string, voucherUrl: string, options?: Options): Promise<ReturnData>`
 
@@ -68,7 +113,7 @@ redeemVoucherAsync();
 
 คืนค่าเป็น Promise ที่ resolve เป็นวัตถุ `ReturnData`
 
-## Types
+## 🛠️ Types
 
 ### `Options`
 
@@ -85,11 +130,11 @@ interface ReturnData {
   success: boolean;
   code: string;
   message: string;
-  data?: any;
+  data?: Data;
 }
 ```
 
-## Response Codes
+## 📋 Response Codes
 
 | Code                     | Description                   | Success |
 | ------------------------ | ----------------------------- | ------- |
@@ -105,6 +150,6 @@ interface ReturnData {
 | `INVALID_INPUT`          | ข้อมูลไม่ถูกต้อง              | false   |
 | `MAINTENANCE`            | อยู่ในช่วงการบำรุงรักษา       | false   |
 
-## License
+## 📄 License
 
-MIT
+[MIT](https://choosealicense.com/licenses/mit/)
