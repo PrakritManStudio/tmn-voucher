@@ -3,6 +3,7 @@
 ไลบรารี TypeScript สำหรับการแลกคูปองอั่งเปา TrueMoney Wallet
 
 ![NPM Last Update](https://img.shields.io/npm/last-update/%40prakrit_m%2Ftmn-voucher)
+[![NPM Downloads](https://img.shields.io/npm/d18m/%40prakrit_m%2Ftmn-voucher)](https://www.npmjs.org/package/@prakrit_m/tmn-voucher)
 [![NPM version](https://img.shields.io/npm/v/@prakrit_m/tmn-voucher.svg?style=flat)](https://www.npmjs.org/package/@prakrit_m/tmn-voucher)
 
 ## 🌟 Features
@@ -183,7 +184,7 @@ type ReturnData =
       // กรณี redeem สำเร็จ
       success: true;
       code: "SUCCESS";
-      message: string;
+      message: string; // ข้อความจาก TrueMoney
       amount: number; // จำนวนเงินเป็นสตางค์
       data: Data; // ข้อมูลจาก TrueMoney
     }
@@ -191,8 +192,8 @@ type ReturnData =
       // กรณี redeem ไม่สำเร็จ
       success: false;
       code: string;
-      message: string;
-      data?: Data | null;
+      message: string; // ข้อความจาก TrueMoney
+      data?: Data | null; // ข้อมูลจาก TrueMoney
     };
 ```
 
