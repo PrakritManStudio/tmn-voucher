@@ -2,9 +2,12 @@
 
 ไลบรารี TypeScript สำหรับการแลกคูปองอั่งเปา TrueMoney Wallet
 
-![NPM Last Update](https://img.shields.io/npm/last-update/%40prakrit_m%2Ftmn-voucher)
-[![NPM Downloads](https://img.shields.io/npm/d18m/%40prakrit_m%2Ftmn-voucher)](https://www.npmjs.org/package/@prakrit_m/tmn-voucher)
+เติมเงิน Truewallet ด้วยซองอั่งเปา
+
 [![NPM version](https://img.shields.io/npm/v/@prakrit_m/tmn-voucher.svg?style=flat)](https://www.npmjs.org/package/@prakrit_m/tmn-voucher)
+[![NPM Downloads](https://img.shields.io/npm/d18m/%40prakrit_m%2Ftmn-voucher)](https://www.npmjs.org/package/@prakrit_m/tmn-voucher)
+![NPM Last Update](https://img.shields.io/npm/last-update/%40prakrit_m%2Ftmn-voucher)
+[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 
 ## 🌟 Features
 
@@ -24,6 +27,9 @@ npm install @prakrit_m/tmn-voucher
 
 # yarn
 yarn add @prakrit_m/tmn-voucher
+
+# pnpm
+pnpm add @prakrit_m/tmn-voucher
 ```
 
 ## 📖 Usage
@@ -217,4 +223,7 @@ type ReturnData =
 
 ## 📄 License
 
-[MIT](https://choosealicense.com/licenses/mit/)
+> This is a third-party SDK, not an official TrueMoney.  
+> SDK นี้พัฒนาโดยบุคคลภายนอก ไม่ใช่ผลิตภัณฑ์อย่างเป็นทางการจาก TrueMoney
+
+Licensed under [ISC](LICENSE)
