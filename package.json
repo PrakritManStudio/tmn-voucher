@@ -1,6 +1,6 @@
 {
   "name": "@prakrit_m/tmn-voucher",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "private": false,
   "type": "module",
   "main": "./dist/index.js",
@@ -9,7 +9,7 @@
   "files": [
     "dist"
   ],
-  "license": "MIT",
+  "license": "ISC",
   "scripts": {
     "test": "ts-node example/test.ts",
     "build": "tsup",
@@ -33,12 +33,14 @@
     "url": "https://github.com/PrakritManStudio/tmn-voucher/issues"
   },
   "homepage": "https://github.com/PrakritManStudio/tmn-voucher#readme",
+  "peerDependencies": {
+    "zod": "^3.24.1"
+  },
   "devDependencies": {
     "ts-node": "^10.9.2",
     "tsup": "^8.3.5",
-    "typescript": "^5.7.2"
-  },
-  "dependencies": {
+    "typescript": "^5.7.2",
     "zod": "^3.24.1"
-  }
+  },
+  "dependencies": {}
 }

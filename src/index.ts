@@ -10,6 +10,14 @@ import type {
   StatusCode,
 } from "./types";
 
+/**
+ * แลกคูปอง TrueMoney Wallet
+ * @param phoneNumber - เบอร์โทรศัพท์ผู้รับเงิน
+ * @param voucherUrl - URL ของคูปอง
+ * @param options - ตัวเลือกเพิ่มเติม
+ * @returns Promise<ReturnData>
+ * @throws {TmnVoucherError}
+ */
 export default async function redeemvouchers(
   phoneNumber: string,
   voucherUrl: string,

@@ -7,6 +7,7 @@ export type StatusCode =
   | "CANNOT_GET_OWN_VOUCHER" // Cannot redeem your voucher by yourself.
   | "TARGET_USER_NOT_FOUND" // Target user doesn't exist.
   | "TARGET_USER_REDEEMED" // Target user already redeemed the voucher.
+  | "TARGET_USER_STATUS_INACTIVE" // Target user status is inactive.
   | "INTERNAL_ERROR" // Internal server error
 
 type Status = {
