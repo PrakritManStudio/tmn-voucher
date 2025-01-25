@@ -23,7 +23,9 @@ export default async function redeemvouchers(
   voucherUrl: string,
   options?: Options
 ): Promise<ReturnData> {
-  const voucherCode = voucherUrl.replace(`${BASE_URL}/campaign/?v=`, "");
+  const urlParams = new URLSearchParams(new URL(voucherUrl).search);
+  const voucherCode = urlParams.get('v');
+
 
   // Validate input
   const inputValidation = await validateInput(phoneNumber, voucherUrl, options);

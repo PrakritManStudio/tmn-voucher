@@ -11,12 +11,15 @@ const inputSchema = z.object({
   voucherUrl: z
     .string()
     .refine(
-      (x) => x.startsWith(BASE_URL + "/campaign/?v="),
-      "รูปแบบ URL ไม่ถูกต้อง"
+      (x) => x.startsWith(BASE_URL + "/campaign/?v=") || 
+              x.startsWith(BASE_URL + "/campaign?v=") || 
+              x.startsWith(BASE_URL + "/campaign/voucher_detail?v=") || 
+              x.startsWith(BASE_URL + "/campaign/voucher_detail/?v="),
+      "รูปแบบ URL Voucher ไม่ถูกต้อง"
     )
     .refine(
-      (x) => /^.*\/campaign\/\?v=[A-Za-z0-9]+$/.test(x),
-      "รูปแบบ URL ไม่ถูกต้อง"
+      (x) => /^https:\/\/gift\.truemoney\.com\/campaign(\/voucher_detail)?(\?v=|\/\?v=)[A-Za-z0-9]+$/.test(x),
+      "รูปแบบ URL Voucher ไม่ถูกต้อง"
     ),
 });
 
@@ -25,7 +28,7 @@ const optionsSchema = z.object({
     .number()
     .int("amount: ต้องเป็นจำนวนเต็ม")
     .positive()
-    .min(100, "amount: จำนวนเงินขั้นต่ำ 1 บาท")
+    .min(100, "amount: จำนวนเงินขั้นต่ำ 100 บาท")
     .max(20000000, "amount: จำนวนเงินต้องไม่เกิน 200,000 บาท"),
 });
 
