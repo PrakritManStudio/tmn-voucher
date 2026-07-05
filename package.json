@@ -1,20 +1,28 @@
 {
   "name": "@prakrit_m/tmn-voucher",
-  "version": "1.0.5",
+  "version": "2.0.0",
   "private": false,
   "type": "module",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
   "files": [
     "dist"
   ],
   "license": "ISC",
   "scripts": {
-    "test": "ts-node example/test.ts",
+    "test": "pnpm run build && node --test test/*.test.mjs",
+    "test:live": "pnpm run build && node scripts/live-test.mjs",
     "build": "tsup",
     "build:run": "tsup && node dist/index.js",
-    "publish": "npm run build"
+    "prepublishOnly": "pnpm run build"
   },
   "author": "Prakrit M. <prakritmanstudio@gmail.com>",
   "keywords": [
@@ -41,5 +49,6 @@
   },
   "dependencies": {
     "zod": "^3.24.1"
-  }
+  },
+  "packageManager": "pnpm@11.9.0+sha512.bd682d5d03fe525ef7c9fd6780c6884d1e756ac4c9c9fe00c538782824310dcf90e3ddc4f53835f06dfaebd5085e41855e0bcbb3b60de2ac5bbab89e5036f03b"
 }
