@@ -5,6 +5,35 @@
 รูปแบบการเขียนอ้างอิงจาก [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 และโปรเจคนี้ยึดตาม [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-07-05
+
+### เพิ่มเติม
+- เพิ่ม `TmnVoucherClient` และ `createTmnVoucherClient` เป็น public API หลักของ SDK
+- เพิ่ม `validateInput()`, `extractVoucherCode()` และ `client.validateInput()` สำหรับตรวจ input โดยไม่เรียก API พร้อมรายละเอียด `issues` จาก Zod ทุกจุดที่ไม่ถูกต้อง
+- เพิ่มการตั้งค่า `baseApiUrl`, `userAgent`, `headers`, `fetch` และ `timeoutMs` ต่อ client instance
+- เพิ่ม `checkServerStatus()` สำหรับตรวจสอบสถานะ server และ maintenance
+- เพิ่ม `verifyVoucher()` สำหรับตรวจสอบ voucher โดยไม่ redeem
+- เพิ่ม `pnpm run test:live` สำหรับทดสอบกับ voucher และเบอร์จริง โดย dry-run จะไม่ redeem และต้อง opt-in ด้วย `TMN_LIVE_REDEEM=YES_REDEEM_REAL_VOUCHERS` ก่อน redeem จริง
+- เพิ่ม result codes ฝั่ง SDK เช่น `INVALID_INPUT`, `NETWORK_ERROR`, `TIMEOUT`, `INVALID_RESPONSE`, `MAINTENANCE` และ `CONDITION_NOT_MET`
+- เพิ่ม test ด้วย mock fetch ครอบ flow หลัก รวม voucher แบบ random (R) และ fixed (F)
+- เพิ่ม JSDoc ใน `TmnVoucherClient` และ export ไปใน declaration files
+
+### เปลี่ยนแปลง
+- ปรับโครงสร้างภายในเป็น client, config, transport, validators, voucher rules และ types
+- ปรับ `checkServerStatus()` ให้คืน `MAINTENANCE` เมื่อ `status.code` เป็น `MAINTENANCE` หรือ `data.ma` มีข้อความใน `title_th`, `title_en`, `message_th`, `message_en`
+- transport ตรวจ HTTP status (`!response.ok`) ก่อน parse JSON และคืน `INVALID_RESPONSE`
+- เปรียบเทียบ `options.amount` (สตางค์) แบบ unified ทุกประเภท voucher
+- เก็บ response types จาก TrueMoney API ตามเดิม (snake_case) ไม่แปลง domain model
+- `options.amount` และ `redeemVoucher` result ใช้หน่วยสตางค์ (integer)
+- ทุก method คืน result object เสมอสำหรับ validation, network, timeout และ API error
+- อัปเดต README ภาษาไทยสำหรับ API v2, migration guide และเอกสาร exports
+- ปรับ package version เป็น `2.0.0` และเพิ่ม `exports` map สำหรับ ESM/CJS
+
+### Breaking Changes
+- ลบ default export เดิม `redeemvouchers(...)`
+- เปลี่ยนการใช้งานหลักเป็น `new TmnVoucherClient().redeemVoucher(...)`
+- แก้รหัส maintenance จาก `MAINTEINANCE` เป็น `MAINTENANCE`
+
 ## [1.0.5] - 2024-03-20
 
 ### เพิ่มเติม

@@ -1,21 +1,26 @@
-export type StatusCode =
-  | "BAD_PARAM" // Bad Parameters
-  | "SUCCESS" // success
-  | "VOUCHER_NOT_FOUND" // Voucher doesn't exist.
-  | "VOUCHER_OUT_OF_STOCK" // Voucher ticket is out of stock.
-  | "VOUCHER_EXPIRED" // Voucher is expired.
-  | "CANNOT_GET_OWN_VOUCHER" // Cannot redeem your voucher by yourself.
-  | "TARGET_USER_NOT_FOUND" // Target user doesn't exist.
-  | "TARGET_USER_REDEEMED" // Target user already redeemed the voucher.
-  | "TARGET_USER_STATUS_INACTIVE" // Target user status is inactive.
-  | "INTERNAL_ERROR" // Internal server error
+export type TrueMoneyStatusCode =
+  | "BAD_PARAM"
+  | "SUCCESS"
+  | "VOUCHER_NOT_FOUND"
+  | "VOUCHER_OUT_OF_STOCK"
+  | "VOUCHER_EXPIRED"
+  | "CANNOT_GET_OWN_VOUCHER"
+  | "TARGET_USER_NOT_FOUND"
+  | "TARGET_USER_REDEEMED"
+  | "TARGET_USER_STATUS_INACTIVE"
+  | "INTERNAL_ERROR";
 
-type Status = {
-  message: string;
-  code: StatusCode;
-};
+export type SdkStatusCode =
+  | "INVALID_INPUT"
+  | "CONDITION_NOT_MET"
+  | "MAINTENANCE"
+  | "NETWORK_ERROR"
+  | "TIMEOUT"
+  | "INVALID_RESPONSE";
 
-type VoucherStatus = "active" | "redeemed" | "expired";
+export type StatusCode = TrueMoneyStatusCode | SdkStatusCode;
+
+export type VoucherStatus = "active" | "redeemed" | "expired";
 
 export type Voucher = {
   voucher_id: string;
@@ -31,15 +36,15 @@ export type Voucher = {
   available: number;
 };
 
-type Profile = {
+export type Profile = {
   full_name: string;
 };
 
-type RedeemerProfile = {
+export type RedeemerProfile = {
   mobile_number: string;
 };
 
-type MyTicket = {
+export type MyTicket = {
   mobile: string;
   update_date: number;
   amount_baht: string;
@@ -47,82 +52,142 @@ type MyTicket = {
   profile_pic: string | null;
 };
 
-export type Data = {
+export type VoucherData = {
   voucher: Voucher;
   owner_profile: Profile;
-  redeemer_profile: RedeemerProfile;
-  my_ticket: MyTicket;
-  tickets: MyTicket[];
+  redeemer_profile?: RedeemerProfile | null;
+  my_ticket?: MyTicket | null;
+  tickets?: MyTicket[];
 };
 
-// export type RedeemVoucherResponse = {
-//   status: Status;
-//   data: Data | null;
-// };
+export type TrueMoneyResponse<TData = VoucherData | null> = {
+  status?: {
+    code?: string;
+    message?: string;
+  };
+  data?: TData;
+};
 
-export type RedeemVoucherResponse =
-  | {
-      status: {
-        code: "SUCCESS";
-        message: string;
-      };
-      data: Data;
-    }
-  | {
-      status: {
-        code: Exclude<StatusCode, "SUCCESS">;
-        message: string;
-      };
-      data: Data | null;
-    };
+export type MaintenanceInfo = {
+  title_th: string | null;
+  title_en: string | null;
+  message_th: string | null;
+  message_en: string | null;
+};
 
-export type ReturnData =
+export type ConfigurationData = {
+  deeplink_register?: string;
+  deeplink_app?: string;
+  theme?: unknown;
+  ma?: MaintenanceInfo;
+};
+
+export type SdkSuccess<TCode extends StatusCode = "SUCCESS", TData = undefined> =
+  TData extends undefined
+    ? {
+        success: true;
+        code: TCode;
+        message?: string;
+      }
+    : {
+        success: true;
+        code: TCode;
+        message?: string;
+        data: TData;
+      };
+
+export type SdkFailure<
+  TCode extends Exclude<StatusCode, "SUCCESS"> = Exclude<StatusCode, "SUCCESS">,
+> = {
+  success: false;
+  code: TCode;
+  message: string;
+  data?: unknown;
+};
+
+export type SdkResult<TData = undefined> =
+  | SdkSuccess<"SUCCESS", TData>
+  | SdkFailure;
+
+export type ServerStatusResult =
+  | SdkSuccess
+  | SdkFailure<"MAINTENANCE" | "NETWORK_ERROR" | "TIMEOUT" | "INVALID_RESPONSE">;
+
+export type VerifyVoucherOptions = {
+  amount?: number;
+};
+
+export type RedeemVoucherOptions = VerifyVoucherOptions;
+
+export type ValidateInputParams = {
+  phoneNumber?: string;
+  voucherUrlOrCode: string;
+  options?: VerifyVoucherOptions;
+  requirePhoneNumber?: boolean;
+};
+
+export type ValidationIssue = {
+  path: string;
+  code: string;
+  message: string;
+};
+
+export type ValidateInputResult =
   | {
       success: true;
       code: "SUCCESS";
-      message: string;
-      amount: number;
-      data: Data;
-    }
-  | {
-      success: false;
-      code: Exclude<StatusCode, "SUCCESS">;
-      message: string;
-      data?:
-        | (Data & {
-            my_ticket: MyTicket | null;
-            redeemer_profile: RedeemerProfile | null;
-          })
-        | null;
-    }
-  | {
-      success: false;
-      code: "MAINTEINANCE" | "INVALID_INPUT" | "CONDITION_NOT_MET";
-      message: string;
-    };
-
-export type ValidateInputResponse =
-  | {
-      success: true;
-      code: "SUCCESS";
+      data: {
+        phoneNumber?: string;
+        voucherCode: string;
+        options: VerifyVoucherOptions;
+      };
     }
   | {
       success: false;
       code: "INVALID_INPUT";
       message: string;
+      issues: ValidationIssue[];
     };
 
-export type MaintenanceResponse =
-  | {
-      success: true;
-      code: "SUCCESS";
-    }
-  | {
-      success: false;
-      code: "MAINTEINANCE";
-      message: string;
-    };
+export type VerifyVoucherData = {
+  voucherCode: string;
+  voucher: Voucher;
+  ownerProfile: Profile;
+  tickets: MyTicket[];
+  raw: VoucherData;
+};
 
-export type Options = {
+export type RedeemVoucherData = {
+  voucherCode: string;
   amount: number;
+  raw: VoucherData;
+};
+
+export type VerifyVoucherResult =
+  | SdkSuccess<"SUCCESS", VerifyVoucherData>
+  | SdkFailure<Exclude<StatusCode, "SUCCESS">>;
+
+export type RedeemVoucherResult =
+  | SdkSuccess<"SUCCESS", RedeemVoucherData>
+  | SdkFailure<Exclude<StatusCode, "SUCCESS">>;
+
+export type FetchLike = (
+  input: string | URL | Request,
+  init?: RequestInit,
+) => Promise<Response>;
+
+export type TmnVoucherClientConfig = {
+  baseApiUrl?: string;
+  userAgent?: string;
+  headers?: HeadersInit;
+  fetch?: FetchLike;
+  timeoutMs?: number;
+};
+
+export type ResolvedTmnVoucherClientConfig = {
+  baseApiUrl: string;
+  userAgent: string;
+  headers: HeadersInit;
+  fetch: FetchLike;
+  timeoutMs: number;
 };
